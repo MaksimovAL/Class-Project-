@@ -1,15 +1,11 @@
 ---
 title: 'Automatic or manual transmission: A regression analysis'
-author: "Dr. B"
+output: pdf_document
 date: "Tuesday, September 16, 2014"
-output: html_document
 ---
-
 Executive Summary
 -----------------
-
 For this project, I work for Motor Trend, a magazine about the automobile industry. I am interested in exploring the relationship between a set of variables and miles per gallon (MPG) (outcome). I am particularly interested in the following two questions:
-
 1. Is an automatic or manual transmission better for MPG?
 2. How different is the MPG between automatic and manual transmissions??
 
@@ -19,7 +15,7 @@ Data Analysis
 --------------
 I began my analysis by loading the mtcars dataset and reviewing the variables.
 
-```{r}
+```{r,results='hide'}
 data(mtcars)
 str(mtcars)
 ```
@@ -32,29 +28,18 @@ mtcars$cyl <- factor(mtcars$cyl,levels=c(4,6,8),labels=c("4cyl","6cyl","8cyl"))
 mtcars$am <- factor(mtcars$am,levels=c(0,1),labels=c("Automatic","Manual"))
 mtcars$vs <- factor(mtcars$vs)
 mtcars$carb <- factor(mtcars$carb)
-str(mtcars)
 ```
 Exploratory Analysis
 ------------------
-
 Next, I explored relationships between variables of interest. 
 
-a. I computed the correlation matrix with all 11 varaiables, and sorted the matrix.
-
-```{r}
+a. I computed the correlation matrix with all 11 varaiables.
+```{r, results='hide'}
 data(mtcars)
 cor.out <- sort(cor(mtcars)[,1])
 round(cor.out, 3)
 ```
-
-The correlation coefficient r measures the strength and direction of a linear relationship between two variables on a scatterplot and can be intrepreted as follows:
-
-          1 A perfect uphill (positive) linear relationship      
-        .70 A strong linear relationship
-        .50 A moderate linear relationship
-        .30 A weak linear relationship
-          0 No linear relationship       
-          
+  
 b. I plotted the the relationship between all the variables of the dataset, which indicated that the variables cyl, disp, hp, drat, wt, vs and am have a strong correlation with mpg (Appendix - Figure 1). 
 
 c. I prepared a box plot for level of am (Automatic or Manual). The plot indcates that manual transmissions tend to have higher mpg. This data is further analyzed and discussed in regression analysis section by fitting a linear model (Appendix - Figure 2).
@@ -64,29 +49,25 @@ Regression Analysis
 In this section, I describe how I built the linear regression models using different variables in order to find the best fit and compare it with the base model which I have using anova. After selecting a model, I performed an analysis of residuals.
 
 I began with base model containing only am as the predictor variable.
-
-```{r}
+```{r, results='hide'}
 basemodel <- lm(mpg ~ am, data = mtcars)
 summary(basemodel)
 ```
 
 Next, I developed an inclusive model that included all variables as predictors of mpg.
-
-```{r}
+```{r, results='hide'}
 inclusivemodel <- lm(mpg ~ ., data = mtcars)
 summary(inclusivemodel)
 ```
 
 Next, I performed stepwise model selection in order to select significant predictors for the final, best model. The step function will perform this selection by calling lm repeatedly to build multiple regression models and select the best variables from them using both forward selection and backward elimination methods using AIC algorithm. This  ensures that the useful variables are included in the model while omitting ones that do not contribute significantly to predicting mpg.
-
 ```{r,results='hide'}
 bestmodel <- step(inclusivemodel, direction = "both")
 summary(bestmodel)
 ```
 
 Finally, I compared the base model and the best model to determine if the confounder variables (cyl, hp, and wt) contribute to the accuracy of the model.
-
-```{r}
+```{r, results='hide'}
 anova(basemodel, bestmodel)
 ```
 
@@ -101,15 +82,13 @@ An analaysis of the residual plots indicated:
 4. There were some distinct points of interest (outliers or leverage points) in the top right of the plots that may indicate values of increased leverage of outliers.  
 
 I computed regression diagnostics of the best model to identify leverage points. I computed the top three points in each case of influence measures. The data points with the most leverage in the fit are identfied by hatvalues().
-
-```{r}
+```{r, results='hide'}
 leverage <- hatvalues(bestmodel)
 tail(sort(leverage),3)
 ```
 
 The data points that influence the model coefficients the most are given by the dfbetas() function.
-
-```{r}
+```{r, results='hide'}
 influential <- dfbetas(bestmodel)
 #tail(sort(influential[,6]),3)
 ```
@@ -119,7 +98,7 @@ The models of vehicles identifyied above are the same models identified with the
 Statistical Inference
 ---------------------
 I performed a t-test on the two subsets of mpg data (manual and automatic transmission).
-```{r}
+```{r, results='hide'}
 t.test(mpg ~ am, data = mtcars)
 ```
 
@@ -153,11 +132,4 @@ Figure 3 - Residual Plots
 ```{r, echo=FALSE}
 par(mfrow=c(2, 2))
 plot(bestmodel)
-```
-
-```{r, echo=FALSE}
-library(ggplot2) 
-# Boxplots of mpg by transmission style
-# observations (points) are overlayed and jittered
-qplot(am, mpg, data=mtcars, geom=c("boxplot", "jitter"), fill=factor(am),  main="Mileage by Transmission Type", xlab="", ylab="Miles per Gallon") 
 ```
