@@ -1,6 +1,6 @@
 ---
 title: 'Automatic or manual transmission: A regression analysis'
-output: pdf_document
+output: html_document
 date: "Tuesday, September 16, 2014"
 ---
 Executive Summary
@@ -16,9 +16,22 @@ Data Analysis
 I began my analysis by loading the mtcars dataset and reviewing the variables.
 
 ```{r,results='hide'}
-data(mtcars)
 str(mtcars)
 ```
+
+Exploratory Analysis
+------------------
+Next, I explored relationships between variables of interest. 
+
+a. I computed the correlation matrix with all 11 varaiables.
+```{r, results='hide'}
+cor.out <- sort(cor(mtcars)[,1])
+round(cor.out, 3)
+```
+  
+b. I plotted the the relationship between all the variables of the dataset, which indicated that the variables cyl, disp, hp, drat, wt, vs and am have a strong correlation with mpg (Appendix - Figure 1). 
+
+c. I prepared a box plot for level of am (Automatic or Manual). The plot indcates that manual transmissions tend to have higher mpg. This data is further analyzed and discussed in regression analysis section by fitting a linear model (Appendix - Figure 2).
 
 For more efficient analysis, I transformed transforming the following 5 variables into factors:
 
@@ -29,20 +42,6 @@ mtcars$am <- factor(mtcars$am,levels=c(0,1),labels=c("Automatic","Manual"))
 mtcars$vs <- factor(mtcars$vs)
 mtcars$carb <- factor(mtcars$carb)
 ```
-Exploratory Analysis
-------------------
-Next, I explored relationships between variables of interest. 
-
-a. I computed the correlation matrix with all 11 varaiables.
-```{r, results='hide'}
-data(mtcars)
-cor.out <- sort(cor(mtcars)[,1])
-round(cor.out, 3)
-```
-  
-b. I plotted the the relationship between all the variables of the dataset, which indicated that the variables cyl, disp, hp, drat, wt, vs and am have a strong correlation with mpg (Appendix - Figure 1). 
-
-c. I prepared a box plot for level of am (Automatic or Manual). The plot indcates that manual transmissions tend to have higher mpg. This data is further analyzed and discussed in regression analysis section by fitting a linear model (Appendix - Figure 2).
 
 Regression Analysis
 --------------------
